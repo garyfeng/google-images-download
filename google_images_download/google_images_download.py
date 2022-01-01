@@ -1,7 +1,4 @@
 #!/usr/bin/env python
-# In[ ]:
-#  coding: utf-8
-
 ###### Searching and Downloading Google Images to the local disk ######
 
 # Import Libraries
@@ -37,7 +34,7 @@ import re
 import codecs
 import socket
 
-args_list = ["keywords", "keywords_from_file", "prefix_keywords", "suffix_keywords",
+args_list = ["keywords", "keywords_from_file", "online_chip", "prefix_keywords", "suffix_keywords",
              "limit", "format", "color", "color_type", "usage_rights", "size",
              "exact_size", "aspect_ratio", "type", "time", "time_range", "delay", "url", "single_image",
              "output_directory", "image_directory", "no_directory", "proxy", "similar_images", "specific_site",
@@ -69,6 +66,8 @@ def user_input():
         parser = argparse.ArgumentParser()
         parser.add_argument('-k', '--keywords', help='delimited list input', type=str, required=False)
         parser.add_argument('-kf', '--keywords_from_file', help='extract list of keywords from a text file', type=str,
+                            required=False)
+        parser.add_argument('-oc', '--online_chip', help='additional keywords to refine image search, shown as chips UI elements in Google image search UI', type=str,
                             required=False)
         parser.add_argument('-sk', '--suffix_keywords',
                             help='comma separated additional words added after to main keyword', type=str,
@@ -506,6 +505,11 @@ class googleimagesdownload:
             exact_size = ",isz:ex,iszw:" + str(size_array[0]) + ",iszh:" + str(size_array[1])
         else:
             exact_size = ''
+        
+        if arguments['online_chip']:
+            online_chip = "&chips=online_chip:" + ",online_chip:".join([t.strip().replace(" ", "+") for t in arguments['online_chip'].split(',')]) 
+        else:
+            online_chip = ''
 
         built_url = "&tbs="
         counter = 0
@@ -548,7 +552,8 @@ class googleimagesdownload:
                 else:
                     built_url = built_url + ',' + ext_param
                     counter += 1
-        built_url = lang_url + built_url + exact_size
+        built_url = lang_url + online_chip + built_url + exact_size
+
         return built_url
 
     # building main search URL
