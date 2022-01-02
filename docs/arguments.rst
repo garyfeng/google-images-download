@@ -33,6 +33,12 @@ Link to `Documentation Homepage <https://google-images-download.readthedocs.io/e
 |                   |             |                                                                                                                               |
 |                   |             | Only file types '.txt' or  '.csv' are allowed.                                                                                |
 +-------------------+-------------+-------------------------------------------------------------------------------------------------------------------------------+
+| online_chip       | oc          | Denotes the additional keywords or key phrases to refine the image search. Google provides "chips" UI elements                |
+|                   |             | on the google image search web pages, based on the returned images. You can click on one or more of these chips UI elements   |
+|                   |             | to refine your search (without modifying your search phrase). The `online_chip` option mimics this, e.g.:                     |
+|                   |             |                                                                                                                               |
+|                   |             | `--online_chip "keyword one, keyword two, keyword three`                                                                      |
++-------------------+-------------+-------------------------------------------------------------------------------------------------------------------------------+
 | prefix_keywords   | pk          | Denotes additional words added before main keyword while making the search query.                                             |
 |                   |             |                                                                                                                               |
 |                   |             | The final search query would be: <prefix keyword> <keyword>                                                                   |

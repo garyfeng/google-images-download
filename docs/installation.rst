@@ -27,3 +27,9 @@ Manually install using UI
 -------------------------
 
 Go to the `repo on github <https://github.com/hardikvasa/google-images-download>`__ ==> Click on 'Clone or Download' ==> Click on 'Download ZIP' and save it on your local disk.
+
+Install chromedriver
+--------------------
+
+Follow the instructions on https://chromedriver.chromium.org/ to install `chromedriver` on your computer. Use 
+`--chromedriver "PATH/TO/YOUR/INSTALLED/CHROMEDRIVER.exe"` to launch download tasks with more than 101 images. 
