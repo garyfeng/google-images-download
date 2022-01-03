@@ -38,7 +38,7 @@ args_list = ["keywords", "keywords_from_file", "online_chip", "prefix_keywords",
              "limit", "format", "color", "color_type", "usage_rights", "size",
              "exact_size", "aspect_ratio", "type", "time", "time_range", "delay", "url", "single_image",
              "output_directory", "image_directory", "no_directory", "proxy", "similar_images", "specific_site",
-             "print_urls", "print_size", "print_paths", "metadata", "extract_metadata", "socket_timeout",
+             "print_urls", "print_size", "print_paths", "metadata", "extract_metadata", "coco_metadata", "socket_timeout",
              "thumbnail", "thumbnail_only", "language", "prefix", "chromedriver", "related_images", "safe_search",
              "no_numbering",
              "offset", "no_download", "save_source", "silent_mode", "ignore_urls"]
@@ -124,7 +124,9 @@ def user_input():
                             help="Prints the list of absolute paths of the images", action="store_true")
         parser.add_argument('-m', '--metadata', default=False, help="Print the metadata of the image",
                             action="store_true")
-        parser.add_argument('-e', '--extract_metadata', default=False, help="Dumps all the logs into a text file",
+        parser.add_argument('-e', '--extract_metadata', default=False, help="Dumps all the logs into a JSON file",
+                            action="store_true")
+        parser.add_argument('-cm', '--coco_metadata', default=False, help="Export image metadata in COCO JSON format",
                             action="store_true")
         parser.add_argument('-st', '--socket_timeout', default=False,
                             help="Connection timeout waiting for the image to download", type=float)
@@ -1109,6 +1111,63 @@ class googleimagesdownload:
                             print(e)
                         json_file = open("logs/" + search_keyword[i] + ".json", "w")
                         json.dump(items, json_file, indent=4, sort_keys=True)
+                        json_file.close()
+
+                    # save meta data to a COCO Image json file in the same folder as the images
+                    # directory = main_directory + "/" + dir_name
+                    # filename = "coco-metadata.json"
+                    # for now we just dump the same image info as the log; 
+                    # will append to the JSON and will add timestamp
+                    from os.path import exists
+                    import datetime
+                    if arguments['coco_metadata']:
+                        # if the file exists, load it as JSON
+                        coco_metadata_filename = "{}/{}/coco-metadata.json".format(main_directory, dir_name)
+                        if exists(coco_metadata_filename):
+                            # load JSON and do a simple check
+                            try:
+                                with open(coco_metadata_filename) as f:
+                                    coco = json.load(f)
+                            except OSError as e:
+                                print(e)
+                            except ValueError:
+                                print('Error reading COCO Metadata: {} is not a valid JSON file'.format(coco_metadata_filename))
+                            # find the largest 
+                            try:
+                                c = max([im["id"] for im in coco["images"]]) + 1
+                            except ValueError:
+                                print('Error finding the max id in COCO Metadata: {} may not be a valid COCO JSON file'.format(coco_metadata_filename))
+                        else:
+                            coco = {"images":[]}
+                            c = 1
+
+                        for this_image in items:
+                            coco_image = {
+                                    "id": c,
+                                    "dataset_id": 1,
+                                    "category_ids": [],
+                                    "path": "{}/{}/{}".format(main_directory, dir_name, this_image["image_filename"]),
+                                    "width": this_image["image_width"],
+                                    "height": this_image["image_height"],
+                                    "file_name": this_image["image_filename"],
+                                    "annotated": False,
+                                    "annotating": [],
+                                    "num_annotations": 0,
+                                    "metadata": this_image.copy(),
+                                    "deleted": False,
+                                    "milliseconds": 0,
+                                    "events": [],
+                                    "regenerate_thumbnail": False
+                                }
+                            coco_image["metadata"]["timestamp"] = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
+                            coco_image["metadata"]["search_keyword"] = search_keyword[i]
+                            coco_image["metadata"]["online_chip"] = arguments['online_chip']
+                            coco["images"].append(coco_image)
+                            c += 1
+
+                        # we will overwrite the COCO JSON file with combined data
+                        json_file = open(coco_metadata_filename, "w")
+                        json.dump(coco, json_file, indent=4, sort_keys=True)
                         json_file.close()
 
                     # Related images
