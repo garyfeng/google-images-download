@@ -912,6 +912,7 @@ class googleimagesdownload:
 
                     count += 1
                     object['image_filename'] = return_image_name
+                    object['timestamp'] = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
                     items.append(object)  # Append all the links in the list named 'Links'
                     abs_path.append(absolute_path)
                 else:
@@ -1159,9 +1160,12 @@ class googleimagesdownload:
                                     "events": [],
                                     "regenerate_thumbnail": False
                                 }
-                            coco_image["metadata"]["timestamp"] = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
+                            # coco_image["metadata"]["timestamp"] = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
                             coco_image["metadata"]["search_keyword"] = search_keyword[i]
-                            coco_image["metadata"]["online_chip"] = arguments['online_chip']
+                            # adding non-null elements in arguments into the metadata
+                            for a in arguments:
+                                if arguments[a]:
+                                    coco_image["metadata"][a] = arguments[a]
                             coco["images"].append(coco_image)
                             c += 1
 
