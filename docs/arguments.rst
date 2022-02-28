@@ -185,6 +185,12 @@ Link to `Documentation Homepage <https://google-images-download.readthedocs.io/e
 |                   |             |                                                                                                                               |
 |                   |             | This argument does not take any value. Just add '--extract_metadata' or '-e' in your query.                                   |
 +-------------------+-------------+-------------------------------------------------------------------------------------------------------------------------------+
+| coco_metadata     | cm           | This option allows you to save metadata of all the downloaded images in a COCO Annotation JSON file.                         |
+|                   |             |                                                                                                                               |
+|                   |             | This file can be found in the same directory as your images, with file name coco-metadata.json                                |
+|                   |             |                                                                                                                               |
+|                   |             | This argument does not take any value. Just add '--coco_metadata' or '-cm' in your query.                                     |
++-------------------+-------------+-------------------------------------------------------------------------------------------------------------------------------+
 | socket_timeout    | st          | Allows you to specify the time to wait for socket connection.                                                                 |
 |                   |             |                                                                                                                               |
 |                   |             | You could specify a higher timeout time for slow internet connection. The default value is 10 seconds.                        |
