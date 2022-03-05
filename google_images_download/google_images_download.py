@@ -1153,6 +1153,8 @@ class googleimagesdownload:
                                     /max(int(this_image["image_width"]), int(this_image["image_height"]))
                                 if asr < arguments['aspect_ratio_threshold']:
                                     # delete the image
+                                    if not arguments["silent_mode"]:
+                                        print("Deleting Image, aspect ratio {} ====> {}".format(asr, this_image["image_filename"]))
                                     imfile = "{}/{}/{}".format(main_directory, dir_name, this_image["image_filename"])
                                     try:
                                         os.remove(imfile)
