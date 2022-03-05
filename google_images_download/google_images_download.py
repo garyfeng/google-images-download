@@ -109,9 +109,11 @@ def user_input():
         parser.add_argument('-wr', '--time_range',
                             help='time range for the age of the image. should be in the format {"time_min":"YYYY-MM-DD","time_max":"YYYY-MM-DD"}',
                             type=str, required=False)
-        parser.add_argument('-a', '--aspect_ratio', help='comma separated additional words added to keywords', type=str,
+        parser.add_argument('-a', '--aspect_ratio', help="limit the image to ['tall', 'square', 'wide', 'panoramic']", type=str,
                             required=False,
-                            choices=['tall', 'square', 'wide', 'panoramic'])
+                            choices=['tall', 'square', 'wide', 'panoramic']) 
+        parser.add_argument('-at', '--aspect_ratio_threshold', help='takes a fload between 0 and 1 as the minimal aspect ratio to keep the image.', type=float, default=-1,
+                            required=False)
         parser.add_argument('-si', '--similar_images',
                             help='downloads images very similar to the image URL you provide', type=str, required=False)
         parser.add_argument('-ss', '--specific_site', help='downloads images that are indexed from a specific website',
@@ -213,9 +215,9 @@ class googleimagesdownload:
                 req = urllib.request.Request(url, headers=headers)
                 resp = urllib.request.urlopen(req)
                 respData = str(resp.read())
-            except:
+            except Exception as e:
                 print("Could not open URL. Please check your internet connection and/or ssl settings \n"
-                      "If you are using proxy, make sure your proxy settings is configured correctly")
+                      "If you are using proxy, make sure your proxy settings is configured correctly\n %s" % e)
                 sys.exit()
         else:  # If the Current Version of Python is 2.x
             try:
@@ -974,6 +976,8 @@ class googleimagesdownload:
         return paths_agg, errors
 
     def download_executor(self, arguments):
+        import datetime
+
         paths = {}
         errorCount = None
         for arg in args_list:
@@ -1143,6 +1147,22 @@ class googleimagesdownload:
                             c = 1
 
                         for this_image in items:
+                            # check the aspect_ratio_threshold, delete the image and skip the COCO entry if it does not meet the threshold
+                            if arguments['aspect_ratio_threshold'] >0:
+                                asr = 1.0 * min(int(this_image["image_width"]), int(this_image["image_height"]))\
+                                    /max(int(this_image["image_width"]), int(this_image["image_height"]))
+                                if asr < arguments['aspect_ratio_threshold']:
+                                    # delete the image
+                                    if not arguments["silent_mode"]:
+                                        print("Deleting Image, aspect ratio {:.2f} ====> {}".format(asr, this_image["image_filename"]))
+                                    imfile = "{}/{}/{}".format(main_directory, dir_name, this_image["image_filename"])
+                                    try:
+                                        os.remove(imfile)
+                                    except OSError as e:  ## if failed, report it back to the user ##
+                                        print ("Error: %s - %s." % (e.filename, e.strerror))
+                                    # skip the COCO entry
+                                    continue
+
                             coco_image = {
                                     "id": c,
                                     "dataset_id": 1,

@@ -107,6 +107,12 @@ Link to `Documentation Homepage <https://google-images-download.readthedocs.io/e
 |                   |             |                                                                                                                               |
 |                   |             | `Possible values: tall, square, wide, panoramic`                                                                              |
 +-------------------+-------------+-------------------------------------------------------------------------------------------------------------------------------+
+| aspect_ratio_threshold | at     | The minimal aspect ratio threhold to keep the image. Takes a fload number between 0-1.                                        |
+|                   |             |                                                                                                                               |
+|                   |             | The aspect ratio is calculated as min(h,w)/max(h,w), where 1 means a square image.                                            |
+|                   |             | If it is too small, the image is too narrow or tall. When specified, images not meeting the threshold will be                 |
+|                   |             | silently dropped.                                                                                                             |
++-------------------+-------------+-------------------------------------------------------------------------------------------------------------------------------+
 | type              | t           | Denotes the type of image to be downloaded.                                                                                   |
 |                   |             |                                                                                                                               |
 |                   |             | `Possible values: face, photo, clip-art, line-drawing, animated`                                                              |
